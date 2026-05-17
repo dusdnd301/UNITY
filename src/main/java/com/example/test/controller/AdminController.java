@@ -96,6 +96,12 @@ public class AdminController {
         return orderService.changeStatus(id, request.status());
     }
 
+    @PostMapping("/tables/{tableId}/settle")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void settleTable(@PathVariable Long tableId) {
+        orderService.settleTable(tableId);
+    }
+
     @GetMapping("/orders/stream")
     public SseEmitter streamOrders() {
         return realtimeEventService.subscribeAdmin();

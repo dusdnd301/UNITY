@@ -14,6 +14,11 @@
             <span>총 결제 금액</span>
             <span class="text-amber-300" th:text="${#numbers.formatInteger(billTotal, 0, 'COMMA') + '원'}">0원</span>
         </div>
+        <button id="settleButton"
+                th:disabled="${billTotal < 1}"
+                th:attr="data-table-id=${table.id()}"
+                th:classappend="${billTotal < 1} ? ' bg-zinc-700 text-zinc-400' : ' bg-emerald-400 text-zinc-950'"
+                class="mt-4 h-12 w-full rounded-xl font-black">계산완료</button>
     </section>
 
     <section class="mt-4 grid gap-3">
@@ -41,5 +46,33 @@
         </article>
     </section>
 </main>
+<div th:replace="~{fragments/toast :: toast}"></div>
+<script th:src="@{/js/common.js}"></script>
+<script>
+    (function () {
+        var settleButton = document.getElementById("settleButton");
+        if (!settleButton) return;
+
+        settleButton.addEventListener("click", function () {
+            if (settleButton.disabled) return;
+            if (!confirm("계산완료 처리하고 이 테이블 주문 내역을 초기화할까요?")) return;
+
+            settleButton.disabled = true;
+            settleButton.textContent = "처리 중...";
+            apiFetch("/api/admin/tables/" + settleButton.getAttribute("data-table-id") + "/settle", {
+                method: "POST"
+            }).then(function () {
+                showToast("계산완료 처리했습니다.");
+                window.setTimeout(function () {
+                    location.href = "/admin/orders";
+                }, 500);
+            }).catch(function (error) {
+                showToast(error.message);
+                settleButton.disabled = false;
+                settleButton.textContent = "계산완료";
+            });
+        });
+    })();
+</script>
 </body>
 </html>

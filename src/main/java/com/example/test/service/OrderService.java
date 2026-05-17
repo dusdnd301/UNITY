@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class OrderService {
     private static final SecureRandom RANDOM = new SecureRandom();
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyyMMdd");
+    private static final List<OrderStatus> CLOSED_TABLE_STATUSES = List.of(OrderStatus.CANCELLED, OrderStatus.SETTLED);
 
     private final OrderRepository orderRepository;
     private final TableRepository tableRepository;
@@ -83,8 +84,19 @@ public class OrderService {
     }
 
     @Transactional(readOnly = true)
+    public List<OrderResponse> getOpenOrdersByTable(Long tableId) {
+        return orderRepository.findByTableIdAndStatusNotInOrderByCreatedAtDesc(tableId, CLOSED_TABLE_STATUSES)
+                .stream()
+                .map(OrderResponse::from)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
     public List<OrderResponse> getAdminOrders() {
-        return orderRepository.findByCreatedAtAfterOrderByCreatedAtDesc(LocalDateTime.now().minusDays(1))
+        return orderRepository.findByCreatedAtAfterAndStatusNotInOrderByCreatedAtDesc(
+                        LocalDateTime.now().minusDays(1),
+                        CLOSED_TABLE_STATUSES
+                )
                 .stream()
                 .map(OrderResponse::from)
                 .toList();
@@ -97,6 +109,18 @@ public class OrderService {
         OrderResponse response = OrderResponse.from(order);
         realtimeEventService.publishOrderChanged(response);
         return response;
+    }
+
+    @Transactional
+    public void settleTable(Long tableId) {
+        if (!tableRepository.existsById(tableId)) {
+            throw new ApiException(HttpStatus.NOT_FOUND, "테이블을 찾을 수 없습니다.");
+        }
+        List<OrderEntity> orders = orderRepository.findByTableIdAndStatusNotInOrderByCreatedAtDesc(tableId, CLOSED_TABLE_STATUSES);
+        for (OrderEntity order : orders) {
+            order.settle();
+            realtimeEventService.publishOrderChanged(OrderResponse.from(order));
+        }
     }
 
     public OrderEntity findOrderByOrderNumber(String orderNumber) {

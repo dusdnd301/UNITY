@@ -39,6 +39,7 @@ function statusLabel(status) {
     if (status === "DONE") return "완료";
     if (status === "PENDING") return "대기";
     if (["PAID", "COOKING", "READY"].includes(status)) return "접수";
+    if (status === "SETTLED") return "계산완료";
     if (status === "CANCELLED") return "취소";
     return status;
 }
@@ -47,5 +48,6 @@ function statusTone(status) {
     if (status === "DONE") return "bg-emerald-400 text-zinc-950";
     if (["PAID", "COOKING", "READY"].includes(status)) return "bg-amber-400 text-zinc-950";
     if (status === "PENDING") return "bg-zinc-800 text-white";
+    if (status === "SETTLED") return "bg-sky-400 text-zinc-950";
     return "bg-rose-500 text-white";
 }

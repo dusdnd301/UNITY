@@ -35,11 +35,10 @@ public class ViewController {
     @GetMapping("/admin/tables/{tableNumber}/bill")
     public String adminTableBill(@PathVariable int tableNumber, Model model) {
         var table = tableService.getByTableNumber(tableNumber);
-        var orders = orderService.getOrdersByTable(table.id());
+        var orders = orderService.getOpenOrdersByTable(table.id());
         model.addAttribute("table", table);
         model.addAttribute("orders", orders);
         model.addAttribute("billTotal", orders.stream()
-                .filter(order -> !"CANCELLED".equals(order.status().name()))
                 .mapToInt(order -> order.totalPrice())
                 .sum());
         return "table/bill";

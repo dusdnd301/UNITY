@@ -105,12 +105,18 @@ public class OrderEntity {
     }
 
     public void changeStatus(OrderStatus status) {
-        if (this.status == OrderStatus.CANCELLED || this.status == OrderStatus.DONE) {
-            throw new IllegalStateException("완료 또는 취소된 주문은 상태 변경이 불가능합니다.");
+        if (this.status == OrderStatus.CANCELLED || this.status == OrderStatus.DONE || this.status == OrderStatus.SETTLED) {
+            throw new IllegalStateException("완료, 계산완료 또는 취소된 주문은 상태 변경이 불가능합니다.");
         }
         if (status == OrderStatus.PENDING && this.paymentStatus == PaymentStatus.SUCCESS) {
             throw new IllegalStateException("결제 완료 주문은 PENDING으로 되돌릴 수 없습니다.");
         }
         this.status = status;
+    }
+
+    public void settle() {
+        if (this.status != OrderStatus.CANCELLED) {
+            this.status = OrderStatus.SETTLED;
+        }
     }
 }
