@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('테이블 주문')}"></head>
+<body>
+<main class="mx-auto min-h-screen max-w-xl px-4 pb-28 pt-5">
+    <section class="mb-5">
+        <p class="text-sm font-bold text-amber-300">대학교 축제 주막</p>
+        <div class="mt-2 flex items-end justify-between gap-3">
+            <div>
+                <h1 class="text-3xl font-black tracking-tight">메뉴 주문</h1>
+                <p class="mt-1 text-zinc-300"><span th:text="${table.tableNumber()}">1</span>번 테이블</p>
+            </div>
+            <a th:href="@{/cart}" class="rounded-full bg-rose-500 px-4 py-3 text-sm font-black text-white">장바구니 <span id="cartCount">0</span></a>
+        </div>
+    </section>
+
+    <section id="menuList" class="grid gap-3">
+        <div th:if="${#lists.isEmpty(menus)}" class="festival-card rounded-2xl p-5 text-center text-zinc-300">등록된 메뉴가 없습니다.</div>
+        <article th:each="menu : ${menus}" class="festival-card overflow-hidden rounded-2xl">
+            <div class="flex gap-3 p-3">
+                <img th:src="${#strings.isEmpty(menu.imageUrl()) ? '/images/menu-placeholder.svg' : menu.imageUrl()}"
+                     th:alt="${menu.name()}"
+                     class="h-28 w-28 rounded-xl object-cover bg-zinc-800">
+                <div class="min-w-0 flex-1">
+                    <div class="flex items-start justify-between gap-2">
+                        <div>
+                            <p class="text-xs font-bold text-amber-300" th:text="${menu.category()}">안주</p>
+                            <h2 class="mt-1 text-xl font-black" th:text="${menu.name()}">김치전</h2>
+                        </div>
+                        <p class="whitespace-nowrap text-lg font-black" th:text="${#numbers.formatInteger(menu.price(), 0, 'COMMA') + '원'}">12,000원</p>
+                    </div>
+                    <p class="mt-2 line-clamp-2 text-sm text-zinc-300" th:text="${menu.description()}">설명</p>
+                    <button th:disabled="${menu.soldOut()}"
+                            data-add-menu
+                            th:attr="data-menu-id=${menu.id()},data-menu-name=${menu.name()},data-menu-price=${menu.price()}"
+                            th:classappend="${menu.soldOut()} ? ' bg-zinc-700 text-zinc-400' : ' bg-rose-500 text-white'"
+                            class="mt-3 h-11 w-full rounded-xl font-black"
+                            th:text="${menu.soldOut()} ? '품절' : '담기'">담기</button>
+                </div>
+            </div>
+        </article>
+    </section>
+</main>
+
+<nav class="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-xl bg-zinc-950/92 p-4 backdrop-blur safe-bottom">
+    <a th:href="@{/cart}" class="big-button flex w-full items-center justify-center bg-amber-400 text-zinc-950">
+        장바구니 확인 · <span id="cartTotal" class="ml-1">0원</span>
+    </a>
+</nav>
+
+<div th:replace="~{fragments/toast :: toast}"></div>
+<script th:src="@{/js/common.js}"></script>
+<script th:src="@{/js/cart-store.js}"></script>
+<script th:inline="javascript">
+    window.TABLE = {
+        id: /*[[${table.id()}]]*/ 1,
+        number: /*[[${table.tableNumber()}]]*/ 1
+    };
+</script>
+<script th:src="@{/js/menu.js}"></script>
+</body>
+</html>

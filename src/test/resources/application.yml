@@ -1,0 +1,26 @@
+spring:
+  docker:
+    compose:
+      enabled: false
+  datasource:
+    url: jdbc:h2:mem:festival-test;MODE=MySQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+
+app:
+  frontend-base-url: http://localhost:3000
+  qr-output-dir: ./build/test-qr
+  admin-cookie-secure: false
+  cors-allowed-origins:
+    - http://localhost:3000
+  jwt:
+    secret: test-secret-key-must-be-at-least-32-bytes-long
+    expiration-minutes: 60
+  toss:
+    secret-key: test_sk_xxx
+    client-key: test_ck_xxx
+    confirm-url: http://localhost/toss/confirm

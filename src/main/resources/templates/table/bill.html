@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('테이블 계산서')}"></head>
+<body>
+<main class="mx-auto min-h-screen max-w-xl px-4 pb-28 pt-5">
+    <header class="mb-5">
+        <a th:href="@{/admin/orders}" class="text-sm font-bold text-amber-300">관리자 화면으로 돌아가기</a>
+        <h1 class="mt-3 text-3xl font-black">계산서</h1>
+        <p class="mt-1 text-zinc-300"><span th:text="${table.tableNumber()}">1</span>번 테이블</p>
+    </header>
+
+    <section class="festival-card rounded-2xl p-5">
+        <div class="flex items-center justify-between text-xl font-black">
+            <span>총 결제 금액</span>
+            <span class="text-amber-300" th:text="${#numbers.formatInteger(billTotal, 0, 'COMMA') + '원'}">0원</span>
+        </div>
+    </section>
+
+    <section class="mt-4 grid gap-3">
+        <div th:if="${#lists.isEmpty(orders)}" class="festival-card rounded-2xl p-5 text-center text-zinc-300">아직 주문 내역이 없습니다.</div>
+        <article th:each="order : ${orders}" class="festival-card rounded-2xl p-4">
+            <div class="flex items-start justify-between gap-3">
+                <div>
+                    <p class="text-xs font-bold text-amber-300" th:text="${#temporals.format(order.createdAt(), 'HH:mm')}">19:30</p>
+                    <h2 class="mt-1 text-lg font-black" th:text="${order.orderNumber()}">주문번호</h2>
+                </div>
+                <span th:classappend="${order.status().name() == 'DONE'} ? ' bg-emerald-400 text-zinc-950' : (${order.status().name() == 'PENDING'} ? ' bg-zinc-800 text-white' : ' bg-amber-400 text-zinc-950')"
+                      class="rounded-full px-3 py-2 text-sm font-black"
+                      th:text="${order.status().name() == 'DONE'} ? '완료' : (${order.status().name() == 'PENDING'} ? '대기' : '접수')">접수</span>
+            </div>
+            <div class="mt-4 grid gap-1 text-sm">
+                <div th:each="item : ${order.items()}" class="flex justify-between border-b border-white/10 py-2">
+                    <span><span th:text="${item.menuName()}">메뉴</span> x <span th:text="${item.quantity()}">1</span></span>
+                    <strong th:text="${#numbers.formatInteger(item.price() * item.quantity(), 0, 'COMMA') + '원'}">0원</strong>
+                </div>
+            </div>
+            <div class="mt-4 flex justify-between text-lg font-black">
+                <span>주문 금액</span>
+                <span class="text-amber-300" th:text="${#numbers.formatInteger(order.totalPrice(), 0, 'COMMA') + '원'}">0원</span>
+            </div>
+        </article>
+    </section>
+</main>
+</body>
+</html>

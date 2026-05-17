@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('주문 상태')}"></head>
+<body>
+<main class="mx-auto min-h-screen max-w-xl px-4 py-5">
+    <header class="mb-5">
+        <p class="text-sm font-bold text-amber-300">주문 상태</p>
+        <h1 id="orderNumber" class="mt-2 text-3xl font-black">확인 중</h1>
+    </header>
+    <section id="orderCard" class="festival-card rounded-3xl p-5"></section>
+</main>
+<div th:replace="~{fragments/toast :: toast}"></div>
+<script th:src="@{/js/common.js}"></script>
+<script th:inline="javascript">window.ORDER_ID = /*[[${orderId}]]*/ 1;</script>
+<script th:src="@{/js/order-status.js}"></script>
+</body>
+</html>

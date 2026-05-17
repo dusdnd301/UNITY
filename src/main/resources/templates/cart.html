@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('장바구니')}"></head>
+<body>
+<main class="mx-auto min-h-screen max-w-xl px-4 pb-28 pt-5">
+    <header class="mb-5">
+        <a id="backToMenu" class="text-sm font-bold text-amber-300">메뉴로 돌아가기</a>
+        <h1 class="mt-3 text-3xl font-black">장바구니</h1>
+        <p id="tableLabel" class="mt-1 text-zinc-300"></p>
+    </header>
+    <section id="cartItems" class="grid gap-3"></section>
+    <section class="festival-card mt-4 rounded-2xl p-4">
+        <div class="flex items-center justify-between text-lg font-black">
+            <span>총 주문 금액</span>
+            <span id="totalPrice" class="text-amber-300">0원</span>
+        </div>
+    </section>
+</main>
+
+<nav class="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-xl bg-zinc-950/92 p-4 backdrop-blur safe-bottom">
+    <button id="payButton" class="big-button w-full bg-rose-500 text-white">주문 넣기</button>
+</nav>
+
+<div th:replace="~{fragments/toast :: toast}"></div>
+<script th:src="@{/js/common.js}"></script>
+<script th:src="@{/js/cart-store.js}"></script>
+<script th:src="@{/js/cart.js}"></script>
+</body>
+</html>

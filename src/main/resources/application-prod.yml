@@ -1,0 +1,19 @@
+spring:
+  thymeleaf:
+    cache: true
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+
+server:
+  tomcat:
+    threads:
+      max: 200
+
+logging:
+  file:
+    name: ${LOG_FILE:./logs/festival-order.log}
+  level:
+    root: INFO
+    org.springframework.security: INFO
